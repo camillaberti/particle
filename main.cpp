@@ -4,10 +4,8 @@
 #include "TRandom.h"
 #include "TH1F.h"
 #include <algorithm>
-#include <iostream>
 
 int main(){
-    std::cout << "per favore funziona" << '\n';
     R__LOAD_LIBRARY(particletype_cpp.so);
     R__LOAD_LIBRARY(resonancetype_cpp.so);
     R__LOAD_LIBRARY(particle_cpp.so);
@@ -27,7 +25,6 @@ int main(){
     TH1F* h4 = new TH1F("h4","Distribution of P",500,0,10);
     TH1F* h5 = new TH1F("h5","Distribution of transverse P",500,0,10);
     TH1F* h6 = new TH1F("h6","Distribution of energy",500,0,10);
-    //istogrammi massa invariante, da aggiustare range e bin
     TH1F* h7 = new TH1F("h7","Total invariant mass",160,0,2);
     TH1F* h8 = new TH1F("h8","Invariant mass with opposite charge",160,0,2);
     TH1F* h9 = new TH1F("h9","Invariant mass with same charge",160,0,2);
@@ -71,13 +68,15 @@ int main(){
                     p.Decay2body(p1,p2);
                     EventParticles.push_back(p1);
                     EventParticles.push_back(p2);
+                    h12->Fill(p1.InvMass(p2)); //solo per l'ultimo istogramma di minv bisogna considerare solo le "nuove" particelle
                 }
                 else {
                     Particle p1{"Pion-"};
-                    Particle p2 ={"Kaon+"};
+                    Particle p2{"Kaon+"};
                     p.Decay2body(p1,p2);
                     EventParticles.push_back(p1);
                     EventParticles.push_back(p2);
+                    h12->Fill(p1.InvMass(p2));
                 }
             }  
         }
@@ -91,15 +90,16 @@ int main(){
                     h8->Fill(it->InvMass(p));
                 }
                 else {h9->Fill(it->InvMass(p));}
-                if((it->GetIndex() == 0 && p.GetIndex() == 3) || (it->GetIndex() == 1 && p.GetIndex() == 2)){ //pion+/kaon- or pion-/kaon+ 
+                if((it->GetIndex() == 0 && p.GetIndex() == 3) || (it->GetIndex() == 3 && p.GetIndex() == 0) 
+                    || (it->GetIndex() == 1 && p.GetIndex() == 2) || (it->GetIndex() == 2 && p.GetIndex() == 1)){ //pion+/kaon- or pion-/kaon+ 
                     h10->Fill(it->InvMass(p));}
-                if((it->GetIndex() == 0 && p.GetIndex() == 2) || (it->GetIndex() == 1 && p.GetIndex() == 3)){ //pion+/kaon+ or pion-/kaon- 
+                if((it->GetIndex() == 0 && p.GetIndex() == 2) || (it->GetIndex() == 2 && p.GetIndex() == 0) 
+                    || (it->GetIndex() == 1 && p.GetIndex() == 3) || (it->GetIndex() == 3 && p.GetIndex() == 1)){ //pion+/kaon+ or pion-/kaon- 
                     h11->Fill(it->InvMass(p));}        
                 }); 
 
             }
-        //solo per l'ultimo istogramma di minv bisogna considerare solo le "nuove" particelle
-
+        
         EventParticles.clear();
     } 
 }
