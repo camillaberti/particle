@@ -14,6 +14,7 @@ class Particle{
     double GetPy() const {return P_y_;}
     double GetPz() const {return P_z_;}
     double GetParticleMass() const{return ParticleType_[Index_]->GetMass();}
+    double GetParticleCharge() const {return ParticleType_[Index_]->GetCharge();}
     double GetEnergy() const;
     void SetIndex(int i);
     void SetIndex(std::string name);
