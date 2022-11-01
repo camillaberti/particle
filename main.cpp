@@ -28,30 +28,31 @@ int main(){
     TH1F* h5 = new TH1F("h5","Distribution of transverse P",500,0,10);
     TH1F* h6 = new TH1F("h6","Distribution of energy",500,0,10);
     //istogrammi massa invariante, da aggiustare range e bin
-    TH1F* h7 = new TH1F("h7","Total invariant mass",500,0,10);
-    TH1F* h8 = new TH1F("h8","Invariant mass with opposite charge",500,0,10);
-    TH1F* h9 = new TH1F("h9","Invariant mass with same charge",500,0,10);
-    TH1F* h10 = new TH1F("h10","Invariant mass with pion+/kaon- and pion-/kaon+",500,0,10);
+    TH1F* h7 = new TH1F("h7","Total invariant mass",160,0,2);
+    TH1F* h8 = new TH1F("h8","Invariant mass with opposite charge",160,0,2);
+    TH1F* h9 = new TH1F("h9","Invariant mass with same charge",160,0,2);
+    TH1F* h10 = new TH1F("h10","Invariant mass with pion+/kaon- and pion-/kaon+",160,0,2);
     TH1F* h11 = new TH1F("h11","Invariant mass with pion+/kaon+ and pion-/kaon-",500,0,10);
+    TH1F* h12 = new TH1F("h12","Invariant mass between decayed particles",80,0,2);
 
 
 
     std::vector<Particle> EventParticles;
     for(int i = 0; i != 1E5; ++i){
-        for(int n = 0; n != 100; ++i){
+        for(int n = 0; n != 100; ++n){
             Particle particle{};
-            double phi = gRandom->Rndm()*2*M_PI;
-            double theta = gRandom->Rndm()*M_PI;
+            double phi = gRandom->Uniform(0, 2*M_PI);
+            double theta = gRandom->Uniform(0,M_PI);
             double P = gRandom->Exp(1);
             particle.SetP(P*std::sin(theta)*std::cos(phi),P*std::sin(theta)*std::sin(phi),P*std::cos(theta));
-            auto x = gRandom->Rndm();
+            auto const x = gRandom->Rndm();
             if(x<0.4){particle.SetIndex(0);}
             else if(x<0.8){particle.SetIndex(1);}
             else if(x<0.85){particle.SetIndex(2);}
             else if(x<0.9){particle.SetIndex(3);}
             else if(x<0.945){particle.SetIndex(4);}
             else if(x<0.99){particle.SetIndex(5);}
-            else if(x<1){particle.SetIndex(6);}
+            else {particle.SetIndex(6);}
             EventParticles.push_back(particle); 
             //filling histograms, non bisogna includere le figlie dei decadimenti  
             h1->Fill(particle.GetIndex()); 
@@ -80,6 +81,7 @@ int main(){
                 }
             }  
         }
+        //nella massa invariante bisogna includere le figlie dei decadimenti?
         auto it = EventParticles.begin();
         for(; it != EventParticles.end(); ++it){
             auto next = std::next(it);
