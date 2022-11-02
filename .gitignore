@@ -2,4 +2,4 @@
 *.so
 *.d
 *.pcm
-test
+histograms.root

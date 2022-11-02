@@ -4,6 +4,7 @@
 #include "TRandom.h"
 #include "TH1F.h"
 #include "TCanvas.h"
+#include "TFile.h"
 #include <algorithm>
 
 void mymain(){
@@ -32,6 +33,12 @@ void mymain(){
     TH1F* h10 = new TH1F("h10","Invariant mass with pion+/kaon- and pion-/kaon+",160,0,2);
     TH1F* h11 = new TH1F("h11","Invariant mass with pion+/kaon+ and pion-/kaon-",500,0,10);
     TH1F* h12 = new TH1F("h12","Invariant mass between decayed particles",80,0,2);
+    h7->Sumw2();
+    h8->Sumw2();
+    h9->Sumw2();
+    h10->Sumw2();
+    h11->Sumw2();
+    h12->Sumw2();
 
 
 
@@ -103,8 +110,11 @@ void mymain(){
         
         EventParticles.clear();
     } 
+    TFile* file = new TFile("histograms.root","RECREATE");
+    file->Write();
+    file->Close();
     //drawing, magari da fare una tlist/array
-    /*TCanvas* c1 = new TCanvas("c1","test1",900,600);
+    TCanvas* c1 = new TCanvas("c1","test1",900,600);
     c1->Divide(2,3);
     c1->cd(1);
     h1->Draw();
@@ -131,5 +141,5 @@ void mymain(){
     c2->cd(5);
     h11->Draw();
     c2->cd(6);
-    h12->Draw();*/
+    h12->Draw();
 }
