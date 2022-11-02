@@ -3,9 +3,10 @@
 #include "particle.hpp"
 #include "TRandom.h"
 #include "TH1F.h"
+#include "TCanvas.h"
 #include <algorithm>
 
-int main(){
+void mymain(){
     R__LOAD_LIBRARY(particletype_cpp.so);
     R__LOAD_LIBRARY(resonancetype_cpp.so);
     R__LOAD_LIBRARY(particle_cpp.so);
@@ -102,4 +103,33 @@ int main(){
         
         EventParticles.clear();
     } 
+    //drawing, magari da fare una tlist/array
+    /*TCanvas* c1 = new TCanvas("c1","test1",900,600);
+    c1->Divide(2,3);
+    c1->cd(1);
+    h1->Draw();
+    c1->cd(2);
+    h2->Draw();
+    c1->cd(3);
+    h3->Draw();
+    c1->cd(4);
+    h4->Draw();
+    c1->cd(5);
+    h5->Draw();
+    c1->cd(6);
+    h6->Draw();
+    TCanvas* c2 = new TCanvas("c2","test inv mass",900,600);
+    c2->Divide(2,3);
+    c2->cd(1);
+    h7->Draw();
+    c2->cd(2);
+    h8->Draw();
+    c2->cd(3);
+    h9->Draw();
+    c2->cd(4);
+    h10->Draw();
+    c2->cd(5);
+    h11->Draw();
+    c2->cd(6);
+    h12->Draw();*/
 }

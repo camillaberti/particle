@@ -72,11 +72,11 @@ double Particle::GetEnergy() const{
 }
 
 double Particle::InvMass(Particle& p) const{
-    return sqrt((GetEnergy() + p.GetEnergy())*(GetEnergy() + p.GetEnergy())- (P_x_ + p.GetPx())*(P_x_ + p.GetPx()) + (P_y_ + p.GetPy())*(P_y_ + p.GetPy())+(P_z_ + p.GetPz()));
+    return sqrt((GetEnergy() + p.GetEnergy())*(GetEnergy() + p.GetEnergy())- (P_x_ + p.GetPx())*(P_x_ + p.GetPx()) - (P_y_ + p.GetPy())*(P_y_ + p.GetPy())-(P_z_ + p.GetPz())*(P_z_ + p.GetPz()));
 }
 
 void Particle::SetP(double px,double py,double pz){
     P_x_ = px;
     P_y_ = py;
-    P_x_ = pz;
+    P_z_ = pz;
 }
