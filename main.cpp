@@ -21,24 +21,26 @@ void mymain(){
     Particle::AddParticleType("Proton-",0.93827,-1);
     Particle::AddParticleType("K*",0.89166,0,0.05);
 
-    TH1F* h1 = new TH1F("h1","Types of particles",7,0,7);
-    TH1F* h2 = new TH1F("h2","Distribution of #theta",1000,0,M_PI);
-    TH1F* h3 = new TH1F("h3","Distribution of #varphi",1000,0,2*M_PI);
-    TH1F* h4 = new TH1F("h4","Distribution of P",500,0,10);
-    TH1F* h5 = new TH1F("h5","Distribution of transverse P",500,0,10);
-    TH1F* h6 = new TH1F("h6","Distribution of energy",500,0,10);
-    TH1F* h7 = new TH1F("h7","Total invariant mass",160,0,2);
-    TH1F* h8 = new TH1F("h8","Invariant mass with opposite charge",160,0,2);
-    TH1F* h9 = new TH1F("h9","Invariant mass with same charge",160,0,2);
-    TH1F* h10 = new TH1F("h10","Invariant mass with pion+/kaon- and pion-/kaon+",160,0,2);
-    TH1F* h11 = new TH1F("h11","Invariant mass with pion+/kaon+ and pion-/kaon-",500,0,10);
-    TH1F* h12 = new TH1F("h12","Invariant mass between decayed particles",80,0,2);
+    TH1F* h0 = new TH1F("h0","Types of particles",7,0,7);
+    TH1F* h1 = new TH1F("h1","Distribution of #theta",1000,0,M_PI);
+    TH1F* h2 = new TH1F("h2","Distribution of #varphi",1000,0,2*M_PI);
+    TH1F* h3 = new TH1F("h3","Distribution of P",500,0,10);
+    TH1F* h4 = new TH1F("h4","Distribution of transverse P",500,0,10);
+    TH1F* h5 = new TH1F("h5","Distribution of energy",500,0,10);
+    TH1F* h6 = new TH1F("h6","Total invariant mass",160,0,2);
+    TH1F* h7 = new TH1F("h7","Invariant mass with opposite charge",160,0,2);
+    TH1F* h8 = new TH1F("h8","Invariant mass with same charge",160,0,2);
+    TH1F* h9 = new TH1F("h9","Invariant mass with pion+/kaon- and pion-/kaon+",160,0,2);
+    TH1F* h10 = new TH1F("h10","Invariant mass with pion+/kaon+ and pion-/kaon-",160,0,2);
+    TH1F* h11 = new TH1F("h11","Invariant mass between decayed particles",80,0,2);
+    TH1F* histograms[12]{h0,h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,h11};
+    
+    h6->Sumw2();
     h7->Sumw2();
     h8->Sumw2();
     h9->Sumw2();
     h10->Sumw2();
     h11->Sumw2();
-    h12->Sumw2();
 
 
 
@@ -60,12 +62,12 @@ void mymain(){
             else {particle.SetIndex(6);}
             EventParticles.push_back(particle); 
             //filling histograms, non bisogna includere le figlie dei decadimenti  
-            h1->Fill(particle.GetIndex()); 
-            h2->Fill(theta);
-            h3->Fill(phi); 
-            h4->Fill(P);
-            h5->Fill(sqrt(particle.GetPx()*particle.GetPx()+particle.GetPy()*particle.GetPy()));
-            h6->Fill(particle.GetEnergy());
+            h0->Fill(particle.GetIndex()); 
+            h1->Fill(theta);
+            h2->Fill(phi); 
+            h3->Fill(P);
+            h4->Fill(sqrt(particle.GetPx()*particle.GetPx()+particle.GetPy()*particle.GetPy()));
+            h5->Fill(particle.GetEnergy());
         }
         for(auto& p : EventParticles){
             if(p.GetIndex() == 6){
@@ -76,7 +78,7 @@ void mymain(){
                     p.Decay2body(p1,p2);
                     EventParticles.push_back(p1);
                     EventParticles.push_back(p2);
-                    h12->Fill(p1.InvMass(p2)); //solo per l'ultimo istogramma di minv bisogna considerare solo le "nuove" particelle
+                    h11->Fill(p1.InvMass(p2)); //solo per l'ultimo istogramma di minv bisogna considerare solo le "nuove" particelle
                 }
                 else {
                     Particle p1{"Pion-"};
@@ -84,7 +86,7 @@ void mymain(){
                     p.Decay2body(p1,p2);
                     EventParticles.push_back(p1);
                     EventParticles.push_back(p2);
-                    h12->Fill(p1.InvMass(p2));
+                    h11->Fill(p1.InvMass(p2));
                 }
             }  
         }
@@ -93,17 +95,17 @@ void mymain(){
         for(; it != EventParticles.end(); ++it){
             auto next = std::next(it);
             std::for_each(next,EventParticles.end(),[&](Particle p){ 
-                h7->Fill(it->InvMass(p)); //massa invariante fra tutte le particelle
+                h6->Fill(it->InvMass(p)); //massa invariante fra tutte le particelle
                 if(it->GetParticleCharge() * p.GetParticleCharge() < 0){
-                    h8->Fill(it->InvMass(p));
+                    h7->Fill(it->InvMass(p));
                 }
-                else {h9->Fill(it->InvMass(p));}
+                else {h8->Fill(it->InvMass(p));}
                 if((it->GetIndex() == 0 && p.GetIndex() == 3) || (it->GetIndex() == 3 && p.GetIndex() == 0) 
                     || (it->GetIndex() == 1 && p.GetIndex() == 2) || (it->GetIndex() == 2 && p.GetIndex() == 1)){ //pion+/kaon- or pion-/kaon+ 
-                    h10->Fill(it->InvMass(p));}
+                    h9->Fill(it->InvMass(p));}
                 if((it->GetIndex() == 0 && p.GetIndex() == 2) || (it->GetIndex() == 2 && p.GetIndex() == 0) 
                     || (it->GetIndex() == 1 && p.GetIndex() == 3) || (it->GetIndex() == 3 && p.GetIndex() == 1)){ //pion+/kaon+ or pion-/kaon- 
-                    h11->Fill(it->InvMass(p));}        
+                    h10->Fill(it->InvMass(p));}        
                 }); 
 
             }
@@ -111,35 +113,48 @@ void mymain(){
         EventParticles.clear();
     } 
     TFile* file = new TFile("histograms.root","RECREATE");
-    file->Write();
+    file->cd();
+    //h0->Write();
+    h0->Write();
+    h1->Write();
+    h2->Write();
+    h3->Write();
+    h4->Write();
+    h5->Write();
+    h6->Write();
+    h7->Write();
+    h8->Write();
+    h9->Write();
+    h10->Write();
+    h11->Write();
     file->Close();
     //drawing, magari da fare una tlist/array
     TCanvas* c1 = new TCanvas("c1","test1",900,600);
     c1->Divide(2,3);
     c1->cd(1);
-    h1->Draw();
+    h0->Draw();
     c1->cd(2);
-    h2->Draw();
+    h1->Draw();
     c1->cd(3);
-    h3->Draw();
+    h2->Draw();
     c1->cd(4);
-    h4->Draw();
+    h3->Draw();
     c1->cd(5);
-    h5->Draw();
+    h4->Draw();
     c1->cd(6);
-    h6->Draw();
+    h5->Draw();
     TCanvas* c2 = new TCanvas("c2","test inv mass",900,600);
     c2->Divide(2,3);
     c2->cd(1);
-    h7->Draw();
+    h6->Draw();
     c2->cd(2);
-    h8->Draw();
+    h7->Draw();
     c2->cd(3);
-    h9->Draw();
+    h8->Draw();
     c2->cd(4);
-    h10->Draw();
+    h9->Draw();
     c2->cd(5);
-    h11->Draw();
+    h10->Draw();
     c2->cd(6);
-    h12->Draw();
+    h11->Draw();
 }
