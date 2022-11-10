@@ -35,14 +35,10 @@ void mymain(){
     TH1F* h11 = new TH1F("h11","Invariant mass between decayed particles",80,0,2);
     TH1F* histograms[12]{h0,h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,h11};
     
-    h6->Sumw2();
     h7->Sumw2();
     h8->Sumw2();
     h9->Sumw2();
     h10->Sumw2();
-    h11->Sumw2();
-
-
 
     std::vector<Particle> EventParticles;
     for(int i = 0; i != 1E5; ++i){
@@ -114,47 +110,22 @@ void mymain(){
     } 
     TFile* file = new TFile("histograms.root","RECREATE");
     file->cd();
-    //h0->Write();
-    h0->Write();
-    h1->Write();
-    h2->Write();
-    h3->Write();
-    h4->Write();
-    h5->Write();
-    h6->Write();
-    h7->Write();
-    h8->Write();
-    h9->Write();
-    h10->Write();
-    h11->Write();
+    for(auto& h : histograms){
+        h->Write(); //uno per uno così sennò non funziona
+    }
+    
     file->Close();
-    //drawing, magari da fare una tlist/array
+    //drawing, questa parte poi va spostata
     TCanvas* c1 = new TCanvas("c1","test1",900,600);
     c1->Divide(2,3);
-    c1->cd(1);
-    h0->Draw();
-    c1->cd(2);
-    h1->Draw();
-    c1->cd(3);
-    h2->Draw();
-    c1->cd(4);
-    h3->Draw();
-    c1->cd(5);
-    h4->Draw();
-    c1->cd(6);
-    h5->Draw();
+    for(int i = 0; i != 6; ++i){
+        c1->cd(i+1);
+        histograms[i]->Draw();
+    }
     TCanvas* c2 = new TCanvas("c2","test inv mass",900,600);
     c2->Divide(2,3);
-    c2->cd(1);
-    h6->Draw();
-    c2->cd(2);
-    h7->Draw();
-    c2->cd(3);
-    h8->Draw();
-    c2->cd(4);
-    h9->Draw();
-    c2->cd(5);
-    h10->Draw();
-    c2->cd(6);
-    h11->Draw();
+    for(int i = 1; i != 7; ++i){
+        c2->cd(i);
+        histograms[i+5]->Draw("HISTO");
+    }
 }

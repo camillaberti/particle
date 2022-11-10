@@ -1,4 +1,5 @@
 #include "TFile.h"
+#include "TCanvas.h"
 #include "TH1F.h"
 #include "TF1.h"
 #include <iostream>
@@ -6,6 +7,7 @@
 void analysis(){
     double const k_mass{0.89166};
     double const k_width{0.050};
+    TH1::AddDirectory(kFALSE); 
     TFile* file = new TFile("histograms.root");
     file->cd(); 
     TH1F* h[12];
@@ -18,9 +20,9 @@ void analysis(){
         std::cout << "Bin " << i << " with error: " << h[0]->GetBinContent(i) << "+/-" << h[0]->GetBinError(i) << '\n'; 
     }
     TF1* f1 = new TF1("f1", "pol0", 0, M_PI);
-    f1->SetParameter(0, 1/M_PI);
+    //f1->SetParameter(0, 1/M_PI); non so a che valore settare il parametro
     TF1* f2 = new TF1("f2","pol0",0, 2*M_PI);
-    f2->SetParameter(0, 1/(2*M_PI));
+    //f2->SetParameter(0, 1/(2*M_PI)); pt. 2, ma arcelli ha detto che per funzioni semplici possiamo evitare quindi forse tolgo 
     h[1]->Fit("f1","BQ");
     h[2]->Fit("f2","BQ");
     std::cout << '\n' << "Fitting informations of \u03b8 distribution: " << '\n';
@@ -53,6 +55,12 @@ void analysis(){
     std::cout << "Parameters of fit function: " << f4->GetParameter(0) + '\t' + f4->GetParameter(1) << '\n';
     std::cout << "Chi-square/NDF: " << f4->GetChisquare()/f4->GetNDF() << '\n';
     std::cout << "Chi-square prob: " << f4->GetProb() << '\n';
+    TCanvas* c = new TCanvas("c","hdiff",900,600);
+    c->Divide(1,2);
+    c->cd(1);
+    hdif1->Draw("HISTO");
+    c->cd(2);
+    hdif2->Draw("HISTO");
 
 
     file->Close();
