@@ -3,3 +3,5 @@
 *.d
 *.pcm
 histograms.root
+.vscode/
+c_cpp_properties.json

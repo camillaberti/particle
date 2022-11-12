@@ -91,7 +91,8 @@ void mymain(){
         for(; it != EventParticles.end(); ++it){
             auto next = std::next(it);
             std::for_each(next,EventParticles.end(),[&](Particle p){ 
-                h6->Fill(it->InvMass(p)); //massa invariante fra tutte le particelle
+                if(it->GetParticleCharge() != 0 && next->GetParticleCharge() != 0){
+                h6->Fill(it->InvMass(p));} //massa invariante fra tutte le particelle tranne le k
                 if(it->GetParticleCharge() * p.GetParticleCharge() < 0){
                     h7->Fill(it->InvMass(p));
                 }
