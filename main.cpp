@@ -24,15 +24,15 @@ void mymain(){
     TH1F* h0 = new TH1F("h0","Types of particles",7,0,7);
     TH1F* h1 = new TH1F("h1","Distribution of #theta",1000,0,M_PI);
     TH1F* h2 = new TH1F("h2","Distribution of #varphi",1000,0,2*M_PI);
-    TH1F* h3 = new TH1F("h3","Distribution of P",500,0,10);
-    TH1F* h4 = new TH1F("h4","Distribution of transverse P",500,0,10);
-    TH1F* h5 = new TH1F("h5","Distribution of energy",500,0,10);
+    TH1F* h3 = new TH1F("h3","Distribution of P",500,0,6);
+    TH1F* h4 = new TH1F("h4","Distribution of transverse P",500,0,6);
+    TH1F* h5 = new TH1F("h5","Distribution of energy",500,0,6);
     TH1F* h6 = new TH1F("h6","Total invariant mass",160,0,2);
     TH1F* h7 = new TH1F("h7","Invariant mass with opposite charge",160,0,2);
     TH1F* h8 = new TH1F("h8","Invariant mass with same charge",160,0,2);
     TH1F* h9 = new TH1F("h9","Invariant mass with pion+/kaon- and pion-/kaon+",160,0,2);
     TH1F* h10 = new TH1F("h10","Invariant mass with pion+/kaon+ and pion-/kaon-",160,0,2);
-    TH1F* h11 = new TH1F("h11","Invariant mass between decayed particles",80,0,2);
+    TH1F* h11 = new TH1F("h11","Invariant mass between decayed particles",160,0,2);
     TH1F* histograms[12]{h0,h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,h11};
     
     h7->Sumw2();
@@ -65,7 +65,7 @@ void mymain(){
             h4->Fill(sqrt(particle.GetPx()*particle.GetPx()+particle.GetPy()*particle.GetPy()));
             h5->Fill(particle.GetEnergy());
         }
-        for(auto& p : EventParticles){
+        for(auto const& p : EventParticles){
             if(p.GetIndex() == 6){
                 auto j = gRandom->Rndm();
                 if(j < 0.5){
@@ -74,7 +74,7 @@ void mymain(){
                     p.Decay2body(p1,p2);
                     EventParticles.push_back(p1);
                     EventParticles.push_back(p2);
-                    h11->Fill(p1.InvMass(p2)); //solo per l'ultimo istogramma di minv bisogna considerare solo le "nuove" particelle
+                    h11->Fill(p1.InvMass(p2)); //per l'ultimo istogramma di minv bisogna considerare solo le "nuove" particelle
                 }
                 else {
                     Particle p1{"Pion-"};
@@ -86,17 +86,19 @@ void mymain(){
                 }
             }  
         }
-        //nella massa invariante bisogna includere le figlie dei decadimenti?
+        
         auto it = EventParticles.begin();
         for(; it != EventParticles.end(); ++it){
             auto next = std::next(it);
             std::for_each(next,EventParticles.end(),[&](Particle p){ 
                 if(it->GetParticleCharge() != 0 && next->GetParticleCharge() != 0){
-                h6->Fill(it->InvMass(p));} //massa invariante fra tutte le particelle tranne le k
-                if(it->GetParticleCharge() * p.GetParticleCharge() < 0){
-                    h7->Fill(it->InvMass(p));
-                }
-                else {h8->Fill(it->InvMass(p));}
+                h6->Fill(it->InvMass(p));} //mass invariant between all particles except K*
+
+                if((it->GetParticleCharge() * p.GetParticleCharge()) < 0){
+                    h7->Fill(it->InvMass(p));} //mass invariant with opposite charge
+                else if((it->GetParticleCharge() * p.GetParticleCharge()) > 0){
+                    h8->Fill(it->InvMass(p));} //mass invariant with same charge
+
                 if((it->GetIndex() == 0 && p.GetIndex() == 3) || (it->GetIndex() == 3 && p.GetIndex() == 0) 
                     || (it->GetIndex() == 1 && p.GetIndex() == 2) || (it->GetIndex() == 2 && p.GetIndex() == 1)){ //pion+/kaon- or pion-/kaon+ 
                     h9->Fill(it->InvMass(p));}
@@ -116,17 +118,5 @@ void mymain(){
     }
     
     file->Close();
-    //drawing, questa parte poi va spostata
-    TCanvas* c1 = new TCanvas("c1","test1",900,600);
-    c1->Divide(2,3);
-    for(int i = 0; i != 6; ++i){
-        c1->cd(i+1);
-        histograms[i]->Draw();
-    }
-    TCanvas* c2 = new TCanvas("c2","test inv mass",900,600);
-    c2->Divide(2,3);
-    for(int i = 1; i != 7; ++i){
-        c2->cd(i);
-        histograms[i+5]->Draw("HISTO");
-    }
+    
 }

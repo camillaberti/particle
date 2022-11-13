@@ -2,7 +2,16 @@
 #include "TCanvas.h"
 #include "TH1F.h"
 #include "TF1.h"
+#include "TROOT.h"
+#include "TStyle.h"
 #include <iostream>
+
+void setStyle(){
+  //gROOT->SetStyle("Plain");
+  //gStyle->SetPalette(57);
+  //gStyle->SetOptTitle(0);
+  gStyle->SetOptStat(1110);
+}
 
 void analysis(){
     double const k_mass{0.89166};
@@ -19,34 +28,39 @@ void analysis(){
     for(int i = 1; i != 8; ++i){
         std::cout << "Bin " << i << " with error: " << h[0]->GetBinContent(i) << "+/-" << h[0]->GetBinError(i) << '\n'; 
     }
-    TF1* f1 = new TF1("f1", "pol0", 0, M_PI);
+    TF1* fpolar = new TF1("fpolar", "pol0", 0, M_PI);
+    fpolar->SetLineColor(kRed);
     //f1->SetParameter(0, 1/M_PI); non so a che valore settare il parametro
-    TF1* f2 = new TF1("f2","pol0",0, 2*M_PI);
+    TF1* fazimutal = new TF1("fazimutal","pol0",0, 2*M_PI);
+    fazimutal->SetLineColor(kRed);
     //f2->SetParameter(0, 1/(2*M_PI)); pt. 2, ma arcelli ha detto che per funzioni semplici possiamo evitare quindi forse tolgo 
-    h[1]->Fit("f1","BQ");
-    h[2]->Fit("f2","BQ");
+    h[1]->Fit("fpolar","BQ");
+    h[2]->Fit("fazimutal","BQ");
     std::cout << '\n' << "Fitting informations of \u03b8 distribution: " << '\n';
-    std::cout << "Parameter of const function: " << f1->GetParameter(0) << '\n';
-    std::cout << "Chi-square/NDF: " << f1->GetChisquare()/f1->GetNDF() << '\n';
-    std::cout << "Chi-square prob: " << f1->GetProb() << '\n'<<'\n';
+    std::cout << "Parameter of const function: " << fpolar->GetParameter(0) << '\n';
+    std::cout << "Chi-square/NDF: " << fpolar->GetChisquare()/fpolar->GetNDF() << '\n';
+    std::cout << "Chi-square prob: " << fpolar->GetProb() << '\n'<<'\n';
     std::cout << "Fitting informations of \u03c6 distribution: " << '\n';
-    std::cout << "Parameter of const function: " << f2->GetParameter(0) << '\n';
-    std::cout << "Chi-square/NDF: " << f2->GetChisquare()/f1->GetNDF() << '\n';
-    std::cout << "Chi-square prob: " << f2->GetProb() << '\n'<<'\n';
-    TF1* f3 = new TF1("f3","expo",0,10);
-    f3->SetParameters(0,-1);
-    h[3]->Fit("f3","BQ");
+    std::cout << "Parameter of const function: " << fazimutal->GetParameter(0) << '\n';
+    std::cout << "Chi-square/NDF: " << fazimutal->GetChisquare()/fazimutal->GetNDF() << '\n';
+    std::cout << "Chi-square prob: " << fazimutal->GetProb() << '\n'<<'\n';
+    TF1* fexp = new TF1("fexp","expo",0,10);
+    fexp->SetParameters(0,-1);
+    h[3]->Fit("fexp","BQ");
     std::cout << "Fitting informations of P distribution: " << '\n';
-    std::cout << "Parameters of fit function: " << f3->GetParameter(0) + '\t' + f3->GetParameter(1) << '\n';
-    std::cout << "Chi-square/NDF: " << f3->GetChisquare()/f3->GetNDF() << '\n';
-    std::cout << "Chi-square prob: " << f3->GetProb() << '\n'<<'\n';
-    TH1F* hdif1 = new TH1F(*h[8]); //copy constructor of TH1F
-    TH1F* hdif2 = new TH1F(*h[8]);
+    std::cout << "Parameters of fit function: " << fexp->GetParameter(0) + '\t' + fexp->GetParameter(1) << '\n';
+    std::cout << "Chi-square/NDF: " << fexp->GetChisquare()/fexp->GetNDF() << '\n';
+    std::cout << "Chi-square prob: " << fexp->GetProb() << '\n'<<'\n';
+
+    TH1F* hdif1 = new TH1F(*h[11]); //copy constructor of TH1F
+    TH1F* hdif2 = new TH1F(*h[11]);
     hdif1->Add(h[7],h[8],1,-1);
     hdif2->Add(h[9],h[10],1,-1);
-    hdif1->SetNameTitle("hdif1","Difference between histograms of mass invariant 1");
-    hdif2->SetNameTitle("hdif2","Difference between histograms of mass invariant 2");
-    TF1* f4 = new TF1("f4","gaus",0,2);
+    hdif1->SetNameTitle("hdif1","Mass invariant: opposite charge minus same charge");
+    hdif2->SetNameTitle("hdif2","Mass invariant: (p+/k- and p-/k+) minus (p+/k+ + p-/k-)");
+    hdif1->SetFillColor(kBlue);
+    hdif2->SetFillColor(kBlue);
+    /*TF1* f4 = new TF1("f4","gaus",0,2);
     f4->SetParameter(1,k_mass);
     f4->SetParameter(2,k_width);
     hdif1->Fit("f4","BQ");
@@ -54,12 +68,66 @@ void analysis(){
     std::cout << "Fitting informations of hdif1: " << '\n';
     std::cout << "Parameters of fit function: " << f4->GetParameter(0) + '\t' + f4->GetParameter(1) << '\n';
     std::cout << "Chi-square/NDF: " << f4->GetChisquare()/f4->GetNDF() << '\n';
-    std::cout << "Chi-square prob: " << f4->GetProb() << '\n';
-    TCanvas* c = new TCanvas("c","hdiff",900,600);
-    c->Divide(1,2);
-    c->cd(1);
+    std::cout << "Chi-square prob: " << f4->GetProb() << '\n';*/
+    //fit gauss sulle particelle decadute, da togliere poi
+    TF1* f1 = new TF1("f1","gaus",0,4);
+    f1->SetParameter(1,k_mass);
+    f1->SetParameter(2,k_width);
+
+    h[11]->Fit("f1","BQ");
+    std::cout << "fit infos on decayed particles: " << '\n';
+    std::cout << "Chi-square/NDF: " << f1->GetChisquare()/f1->GetNDF() << '\n';
+    std::cout << "Chi-square prob: " << f1->GetProb() << '\n'<<'\n';
+    std::cout << "Mean: " << f1->GetParameter(1) << '\n';
+    std::cout << "\u03C3: " << f1->GetParameter(2) << '\n';
+    //debugging
+    std::cout<< "Entries of hdif1: " << hdif1->Integral() << '\n';
+    std::cout<< "Entries of hdif2: " << hdif2->Integral() << '\n';
+    TF1* f2 = new TF1("f2","gaus",0,4);
+    f2->SetParameter(1,k_mass);
+    f2->SetParameter(2,k_width);
+    TF1* f3 = new TF1("f3","gaus",0,4);
+    f3->SetParameter(1,k_mass);
+    f3->SetParameter(2,k_width);
+    hdif1->Fit("f2","BQ");
+    hdif2->Fit("f3","BQ");
+    std::cout << "fit infos on hdif1: " << '\n';
+    std::cout << "Chi-square/NDF: " << f2->GetChisquare()/f2->GetNDF() << '\n';
+    std::cout << "Chi-square prob: " << f2->GetProb() << '\n';
+    std::cout << "Mean: " << f2->GetParameter(1) << '\n';
+    std::cout << "\u03C3: " << f2->GetParameter(2) << '\n'<<'\n';
+    std::cout << "fit infos on hdif2: " << '\n';
+    std::cout << "Chi-square/NDF: " << f3->GetChisquare()/f3->GetNDF() << '\n';
+    std::cout << "Chi-square prob: " << f3->GetProb() << '\n'<<'\n';
+    std::cout << "Mean: " << f3->GetParameter(1) << '\n';
+    std::cout << "\u03C3: " << f3->GetParameter(2) << '\n';
+
+    //cosmetics
+    for(auto const& hist : h){
+        hist->SetFillColor(kBlue);
+    }
+    hdif1->SetFillColor(kBlue);
+    hdif2->SetFillColor(kBlue);
+    //drawing
+    TCanvas* c1 = new TCanvas("c1","test1",900,600);
+    c1->Divide(2,3);
+    for(int i = 0; i != 6; ++i){
+        c1->cd(i+1);
+        h[i]->Draw();
+    }
+    TCanvas* c2 = new TCanvas("c2","Invariant mass 1",900,600);
+    c2->Divide(2,3);
+    for(int i = 1; i != 6; ++i){
+        c2->cd(i);
+        h[i+5]->Draw("HISTO");
+    }
+    TCanvas* c3 = new TCanvas("c3","Invariant mass 2",900,600);
+    c3->Divide(2,2);
+    c3->cd(1);
+    h[11]->Draw("HISTO");
+    c3->cd(3);
     hdif1->Draw("HISTO");
-    c->cd(2);
+    c3->cd(4);
     hdif2->Draw("HISTO");
 
 
