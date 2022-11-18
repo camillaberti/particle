@@ -56,8 +56,7 @@ void mymain(){
             else if(x<0.945){particle.SetIndex(4);}
             else if(x<0.99){particle.SetIndex(5);}
             else {particle.SetIndex(6);}
-            EventParticles.push_back(particle); 
-            //filling histograms, non bisogna includere le figlie dei decadimenti  
+            EventParticles.push_back(particle);  
             h0->Fill(particle.GetIndex()); 
             h1->Fill(theta);
             h2->Fill(phi); 
@@ -74,7 +73,7 @@ void mymain(){
                     p.Decay2body(p1,p2);
                     EventParticles.push_back(p1);
                     EventParticles.push_back(p2);
-                    h11->Fill(p1.InvMass(p2)); //per l'ultimo istogramma di minv bisogna considerare solo le "nuove" particelle
+                    h11->Fill(p1.InvMass(p2));
                 }
                 else {
                     Particle p1{"Pion-"};
@@ -114,7 +113,7 @@ void mymain(){
     TFile* file = new TFile("histograms.root","RECREATE");
     file->cd();
     for(auto& h : histograms){
-        h->Write(); //uno per uno così sennò non funziona
+        h->Write();
     }
     
     file->Close();

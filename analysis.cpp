@@ -8,7 +8,8 @@
 
 void setStyle(){
   gROOT->SetStyle("Plain");
-  gStyle->SetOptStat(1110);
+  gStyle->SetOptStat(2210);
+  gStyle->SetOptFit(1111);
 }
 
 void analysis(){
@@ -21,15 +22,15 @@ void analysis(){
     TString histname = "h";
     for(int i = 0; i != 12; ++i){
         h[i] = (TH1F*)file->Get(histname + i);
-        std::cout<< "Entries of " + histname + i+":" +'\t' << h[i]->GetEntries() << '\n'; //GetEntries considera anche underflow e overflow        
+        std::cout<< "Entries of " + histname + i+":" +'\t' << h[i]->GetEntries() << '\n';      
     }
     for(int i = 1; i != 8; ++i){
-        std::cout << "Bin " << i << " with error: " << h[0]->GetBinContent(i) << "+/-" << h[0]->GetBinError(i) << '\n'; 
+        std::cout << "Bin " << i << " with error: " << h[0]->GetBinContent(i) << " +/- " << h[0]->GetBinError(i) << '\n'; 
     }
     TF1* fpolar = new TF1("fpolar", "pol0", 0, M_PI);
-    fpolar->SetLineColor(kBlue);
+    fpolar->SetLineColor(kBlue-2);
     TF1* fazimutal = new TF1("fazimutal","pol0",0, 2*M_PI);
-    fazimutal->SetLineColor(kBlue); 
+    fazimutal->SetLineColor(kBlue-2); 
     h[1]->Fit("fpolar","BQ");
     h[2]->Fit("fazimutal","BQ");
     std::cout << '\n' << "Fitting informations of \u03b8 distribution: " << '\n';
@@ -42,7 +43,7 @@ void analysis(){
     std::cout << "Chi-square prob: " << fazimutal->GetProb() << '\n'<<'\n';
     TF1* fexp = new TF1("fexp","expo",0,10);
     fexp->SetParameters(0,-1);
-    fexp->SetLineColor(kBlue);
+    fexp->SetLineColor(kBlue-2);
     h[3]->Fit("fexp","BQ");
     std::cout << "Fitting informations of P distribution: " << '\n';
     std::cout << "Parameter of fit function: " << fexp->GetParameter(1) << " +/- " << fexp->GetParError(1) << '\n';
@@ -60,7 +61,7 @@ void analysis(){
     TF1* f1 = new TF1("f1","gaus",0,4);
     f1->SetParameter(1,k_mass);
     f1->SetParameter(2,k_width);
-    f1->SetLineColor(kBlue);
+    f1->SetLineColor(kBlue-2);
 
     h[11]->Fit("f1","BQ");
     std::cout << "Fitting informations on mass invariant between decayed particles: " << '\n';
@@ -76,11 +77,11 @@ void analysis(){
     TF1* f2 = new TF1("f2","gaus",0,4);
     f2->SetParameter(1,k_mass);
     f2->SetParameter(2,k_width);
-    f2->SetLineColor(kBlue);
+    f2->SetLineColor(kBlue-2);
     TF1* f3 = new TF1("f3","gaus",0,4);
     f3->SetParameter(1,k_mass);
     f3->SetParameter(2,k_width);
-    f3->SetLineColor(kBlue);
+    f3->SetLineColor(kBlue-2);
     hdif1->Fit("f2","BQ");
     hdif2->Fit("f3","BQ");
     std::cout << "Fitting informations of mass invariant: opposite charge minus same charge " << '\n';
@@ -121,8 +122,10 @@ void analysis(){
     for(int i = 6; i != 12; ++i){
         h[i]->GetXaxis()->SetTitle("Invariant mass (GeV/c^{2})");
     }
-    h[1]->SetMinimum(0);
-    h[2]->SetMinimum(0);
+    h[1]->SetMinimum(5000);
+    h[2]->SetMinimum(5000);
+    h[1]->SetMaximum(15000);
+    h[2]->SetMaximum(15000);
     hdif1->SetFillColor(kPink-3);
     hdif2->SetFillColor(kPink-3);
     hdif1->GetXaxis()->SetTitle("Invariant mass (GeV/c^{2})");

@@ -43,7 +43,7 @@ void Particle::SetIndex(int i){
         Index_ = i;
     }
     else{
-        std::cout<< "Can't reassign index: invalid value" << '\n'; //cerr o eccezione?
+        std::cout<< "Can't reassign index: invalid value" << '\n';
     }
 }
 
@@ -72,7 +72,7 @@ double Particle::GetEnergy() const{
 }
 
 double Particle::InvMass(Particle& p) const{
-    return sqrt((GetEnergy() + p.GetEnergy())*(GetEnergy() + p.GetEnergy())- (P_x_ + p.GetPx())*(P_x_ + p.GetPx()) - (P_y_ + p.GetPy())*(P_y_ + p.GetPy())-(P_z_ + p.GetPz())*(P_z_ + p.GetPz()));
+    return sqrt((GetEnergy() + p.GetEnergy())*(GetEnergy() + p.GetEnergy())- s(P_x_ + p.GetPx())*(P_x_ + p.GetPx()) - (P_y_ + p.GetPy())*(P_y_ + p.GetPy())-(P_z_ + p.GetPz())*(P_z_ + p.GetPz()));
 }
 
 void Particle::SetP(double px,double py,double pz){

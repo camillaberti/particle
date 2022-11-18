@@ -6,8 +6,7 @@
 
 class Particle{
     public:
-    //da mettere default constructor 
-    Particle();
+    Particle(); //default constructor
     Particle(std::string name, double p_x = 0, double p_y = 0, double p_z = 0);
     int GetIndex() const {return Index_;}
     double GetPx() const {return P_x_;}
@@ -26,8 +25,7 @@ class Particle{
     int Decay2body(Particle &dau1,Particle &dau2) const;
     private:
     static std::vector <ParticleType*> ParticleType_;
-    static const int MaxNumParticleType_ = 10; //(da mettere eccezione per proteggersi dall'utente pazzo)
-    //static int NParticleType_; non so se serva
+    static const int MaxNumParticleType_ = 10; 
     int Index_;
     double P_x_;
     double P_y_;
