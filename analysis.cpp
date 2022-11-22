@@ -116,11 +116,11 @@ void analysis(){
     h[0]->GetXaxis()->SetTitle("Particle types");
     h[1]->GetXaxis()->SetTitle("#theta (rad)");
     h[2]->GetXaxis()->SetTitle("#Phi (rad)");
-    h[3]->GetXaxis()->SetTitle("Impulse (GeV/c)");
-    h[4]->GetXaxis()->SetTitle("Transverse impulse (GeV/c)");
+    h[3]->GetXaxis()->SetTitle("Impulse (GeV)");
+    h[4]->GetXaxis()->SetTitle("Transverse impulse (GeV)");
     h[5]->GetXaxis()->SetTitle("Energy (GeV)");
     for(int i = 6; i != 12; ++i){
-        h[i]->GetXaxis()->SetTitle("Invariant mass (GeV/c^{2})");
+        h[i]->GetXaxis()->SetTitle("Invariant mass (GeV)");
     }
     h[1]->SetMinimum(5000);
     h[2]->SetMinimum(5000);
@@ -128,9 +128,9 @@ void analysis(){
     h[2]->SetMaximum(15000);
     hdif1->SetFillColor(kPink-3);
     hdif2->SetFillColor(kPink-3);
-    hdif1->GetXaxis()->SetTitle("Invariant mass (GeV/c^{2})");
+    hdif1->GetXaxis()->SetTitle("Invariant mass (GeV)");
     hdif1->GetYaxis()->SetTitle("Entries");
-    hdif2->GetXaxis()->SetTitle("Invariant mass (GeV/c^{2})");
+    hdif2->GetXaxis()->SetTitle("Invariant mass (GeV)");
     hdif2->GetYaxis()->SetTitle("Entries");
     //drawing
     TCanvas* c1 = new TCanvas("c1","Distribution of particles, angles, impulse",900,600);
